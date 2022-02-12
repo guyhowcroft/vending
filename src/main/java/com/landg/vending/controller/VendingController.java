@@ -29,7 +29,7 @@ public class VendingController {
     }
 
     @PutMapping("register")
-    public ResponseEntity transact(@RequestBody List<Integer> coins) {
+    public ResponseEntity register(@RequestBody List<Integer> coins) {
 
         vendingService.register(coins);
 

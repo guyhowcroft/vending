@@ -51,7 +51,7 @@ public class VendingControllerTest {
     @Test
     public void transactTest() {
 
-        ResponseEntity result = toTest.transact(List.of(1,2,2,10));
+        ResponseEntity result = toTest.register(List.of(1,2,2,10));
 
         verify(vendingService, times(1)).register(any(List.class));
         assertEquals(HttpStatus.OK, result.getStatusCode());
