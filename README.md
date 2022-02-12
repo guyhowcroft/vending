@@ -38,8 +38,7 @@ Run the following command:
 ```bash
 java -jar target/vending-0.0.1-SNAPSHOT.jar
 ``` 
-
-##How to use
+## How to use
 
 With the service running send a PUT request to:
 
@@ -63,7 +62,7 @@ E.g - http://localhost:8080/change/60
 http://localhost:8080/change/{Enter change amount}
 ``` 
 
-##Test Harness
+## Test Harness
 To test the main function, calculate change, add more tests to the ChangeServiceIMplTest.java file in the testParameters and run the tests.
 
 E.g
