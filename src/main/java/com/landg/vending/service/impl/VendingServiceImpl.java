@@ -2,6 +2,7 @@ package com.landg.vending.service.impl;
 
 import com.landg.vending.VendingMachine;
 import com.landg.vending.service.ChangeService;
+import com.landg.vending.service.FloatService;
 import com.landg.vending.service.VendingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +10,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class VendingServiceImpl implements VendingService {
 
-    private static VendingMachine vendingMachine;
+    private VendingMachine vendingMachine;
 
     @Value("${vending.accepted.coins}")
     private List<Integer> acceptedCoins;
@@ -26,7 +25,14 @@ public class VendingServiceImpl implements VendingService {
     @Autowired
     private ChangeService changeService;
 
-    public void intialise(List<Integer> coins) {
+    @Autowired
+    private FloatService floatService;
+
+    public VendingServiceImpl() {
+        vendingMachine = new VendingMachine();
+    }
+
+    public void initialise(List<Integer> coins) {
 
         log.info("Intialising Vending Machine");
 
@@ -38,19 +44,14 @@ public class VendingServiceImpl implements VendingService {
 
         vendingMachine = new VendingMachine();
 
-        registerCoins(coins);
+        floatService.registerCoins(vendingMachine, coins);
 
-        printVendingMachineFloat();
+        log.info(vendingMachine.toString());
     }
 
     public void register(List<Integer> coins) {
 
-        if (vendingMachine == null) {
-            log.info("Please intialise vending machine first");
-            return;
-        }
-
-        log.info("Starting register");
+        log.info("Registering Coins: {}", coins);
 
         //validate coin input
         if (!validCoins(coins)) {
@@ -58,19 +59,13 @@ public class VendingServiceImpl implements VendingService {
             return;
         }
 
-        registerCoins(coins);
+        floatService.registerCoins(vendingMachine, coins);
 
-        printVendingMachineFloat();
+        log.info(vendingMachine.toString());
 
-        return;
     }
 
     public Optional<List<Integer>> change(Integer value) {
-
-        if (vendingMachine == null) {
-            log.info("Please intialise vending machine first");
-            return Optional.empty();
-        }
 
         if (vendingMachine.getTotalFloat() < value) {
             log.info("Not enough change in machine to return");
@@ -79,50 +74,25 @@ public class VendingServiceImpl implements VendingService {
 
         List<Integer> coinList = new ArrayList<>();
 
+        log.info("Calculating coins for change {}", value);
+
         Optional<List<Integer>> changeList = changeService.calculateChange(coinList, vendingMachine.getVendingFloat(), value);
 
         if (changeList.isPresent()) {
-            removeCoins(changeList.get());
+
+            floatService.removeCoins(vendingMachine, changeList.get());
+
+            log.info("Returning coins: {}", changeList.get());
+        } else {
+
+            log.info("Could not create change from float");
         }
 
-        printVendingMachineFloat();
+        log.info(vendingMachine.toString());
 
         return changeList;
     }
 
-    private void removeCoins(List<Integer> coins) {
-
-        int totalFloat = vendingMachine.getTotalFloat();
-        Map<Integer, Integer> vendingFloat = vendingMachine.getVendingFloat();
-
-        for (Integer coin : coins) {
-
-            totalFloat = totalFloat - coin;
-
-            vendingFloat.merge(coin, -1, Integer::sum);
-        }
-
-        vendingMachine.setVendingFloat(vendingFloat);
-        vendingMachine.setTotalFloat(totalFloat);
-
-    }
-
-    private void registerCoins(List<Integer> coins) {
-
-        int totalFloat = vendingMachine.getTotalFloat();
-        Map<Integer, Integer> vendingFloat = vendingMachine.getVendingFloat();
-
-        for (Integer coin : coins) {
-
-            totalFloat = totalFloat + coin;
-
-            vendingFloat.merge(coin, 1, Integer::sum);
-        }
-
-        vendingMachine.setVendingFloat(vendingFloat);
-        vendingMachine.setTotalFloat(totalFloat);
-
-    }
 
     private boolean validCoins(List<Integer> coins) {
 
@@ -135,18 +105,5 @@ public class VendingServiceImpl implements VendingService {
         return true;
     }
 
-    private void printVendingMachineFloat() {
-
-        log.info("Vending Machine Float: {}", vendingMachine.getTotalFloat());
-
-        Iterator<Map.Entry<Integer, Integer>> it = vendingMachine.getVendingFloat().entrySet().iterator();
-
-        while (it.hasNext()) {
-
-            Map.Entry<Integer, Integer> me = it.next();
-
-            log.info("coin: {} Amount {}", me.getKey(), me.getValue());
-        }
-    }
 
 }

@@ -25,10 +25,9 @@ public class ChangeServiceImpl implements ChangeService {
 
             Map.Entry<Integer, Integer> me = it.next();
 
-            //for each amount of coin
-            for (int i = 0; i < me.getValue(); i++ ) {
+            if(me.getValue() > 0) {
 
-                int coin = (int) me.getKey();
+                int coin = me.getKey();
 
                 //if the coin can be used
                 if (changeRequired / coin >= 1) {
@@ -50,20 +49,16 @@ public class ChangeServiceImpl implements ChangeService {
 
                     return Optional.of(coinList);
 
-                } else {
-
-                    //get next coin
-                    break;
                 }
             }
-
         }
 
-        //got to end of float with possible coins
+        //got to end of float with possible coins and more change needed
         if (changeRequired > 0 && !coinList.isEmpty() ) {
 
             Integer lastCoin = coinList.get(coinList.size() - 1);
 
+            //remove a coin from change list to check other possibilities
             coinList.remove(coinList.size() - 1);
             changeRequired = changeRequired + lastCoin;
 

@@ -2,7 +2,6 @@ package com.landg.vending.controller;
 
 
 import com.landg.vending.service.VendingService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,20 +10,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-@Slf4j
 public class VendingController {
 
     @Autowired
     private VendingService vendingService;
 
     @PutMapping("initialise")
-    public ResponseEntity intialise(@RequestBody List<Integer> coins) {
+    public ResponseEntity initialise(@RequestBody List<Integer> coins) {
 
-        vendingService.intialise(coins);
+        vendingService.initialise(coins);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -43,7 +42,7 @@ public class VendingController {
         Optional<List<Integer>> changeList = vendingService.change(value);
 
         if (changeList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(changeList.get(), HttpStatus.OK);

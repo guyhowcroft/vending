@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface VendingService {
 
-    void intialise(List<Integer> coins);
+    void initialise(List<Integer> coins);
 
     void register(List<Integer> coins);
 

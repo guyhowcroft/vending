@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class ChangeServiceImplTest {
 
-
     private TreeMap<Integer, Integer> initialFloat;
     private int change;
     private Optional<List<Integer>> expected;
