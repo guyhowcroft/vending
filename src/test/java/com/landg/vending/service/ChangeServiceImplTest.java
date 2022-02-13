@@ -124,6 +124,16 @@ public class ChangeServiceImplTest {
                 {
                     new TreeMap<Integer, Integer>(Collections.reverseOrder()),
                     101, Optional.empty()
+                },
+                {
+                    new TreeMap<Integer, Integer>(Collections.reverseOrder()) {{
+                        put(50, 2);
+                        put(20, 4);
+                        put(10, 1);
+                        put(5, 2);
+                        put(2, 1);
+                    }},
+                    142, Optional.of(Arrays.asList(50,50,20,20,2))
                 }
             }
         );

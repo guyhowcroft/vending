@@ -25,6 +25,7 @@ public class ChangeServiceImpl implements ChangeService {
 
             Map.Entry<Integer, Integer> me = it.next();
 
+            //if there is a coin in the float
             if(me.getValue() > 0) {
 
                 int coin = me.getKey();
@@ -33,6 +34,7 @@ public class ChangeServiceImpl implements ChangeService {
                 if (changeRequired / coin >= 1) {
                     changeRequired = changeRequired - coin;
 
+                    //add to list of change
                     coinList.add(coin);
 
                     //if still more change required
